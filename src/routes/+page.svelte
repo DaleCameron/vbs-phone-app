@@ -53,16 +53,8 @@
 		// Trigger pulse animation locally
 		triggerPulse(appId);
 		
-		// Increment notification count for the clicked app
-		apps = apps.map(app => {
-			if (app.id === appId) {
-				return {
-					...app,
-					notificationCount: app.notificationCount + 1
-				};
-			}
-			return app;
-		});
+		// Note: We no longer increment the notification count here
+		// It will be handled by the polling mechanism to avoid double counting
 		
 		// Send pulse event to server
 		try {
