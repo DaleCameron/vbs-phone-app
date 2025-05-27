@@ -132,7 +132,7 @@
 	});
 </script>
 
-<div class="grid grid-cols-4 gap-6 py-8 px-2">
+<div class="grid grid-cols-4 gap-6 py-8 px-4 max-w-4xl mx-auto w-full">
 	{#each apps as app}
 		<a 
 			href={app.path} 
@@ -154,14 +154,14 @@
 
 <!-- Status message for pulsed apps -->
 {#if showStatusMessage && lastPulsedAppName}
-<div class="fixed bottom-20 left-0 right-0 flex justify-center" transition:fade={{ duration: 300 }}>
-	<div class="bg-black/70 text-white px-4 py-2 rounded-full text-sm">
+<div class="fixed bottom-24 left-0 right-0 flex justify-center z-50" transition:fade={{ duration: 300 }}>
+	<div class="bg-black/70 text-white px-6 py-3 rounded-full text-sm">
 		{lastPulsedAppName} is pulsing
 	</div>
 </div>
 {/if}
 
 <!-- iOS-style dock indicator -->
-<div class="flex justify-center mt-auto mb-4">
-	<div class="w-32 h-1 bg-white/30 rounded-full"></div>
+<div class="flex justify-center mt-auto mb-8">
+	<div class="w-32 h-1.5 bg-white/30 rounded-full"></div>
 </div>

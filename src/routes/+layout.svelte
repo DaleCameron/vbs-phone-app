@@ -3,7 +3,7 @@
 	let { children } = $props();
 </script>
 
-<div class="phone-container h-screen w-full max-w-md mx-auto overflow-hidden bg-black flex flex-col">
+<div class="phone-container h-screen w-screen overflow-hidden bg-black flex flex-col">
 	<div class="phone-status-bar h-6 bg-black text-white flex justify-between items-center px-4 text-xs">
 		<span>9:41 AM</span>
 		<div class="flex space-x-1">
