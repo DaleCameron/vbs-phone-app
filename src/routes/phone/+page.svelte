@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from 'flowbite-svelte';
-	import { PhoneSolid, ArrowLeftSolid } from 'flowbite-svelte-icons';
+	import { PhoneSolid, ArrowLeftOutline } from 'flowbite-svelte-icons';
 
 	// Sample recent calls
 	const recentCalls = [
@@ -14,7 +14,7 @@
 <div class="phone-app bg-white h-full rounded-t-3xl overflow-hidden flex flex-col">
 	<div class="app-header bg-gray-100 p-4 flex items-center justify-between">
 		<a href="/" class="text-blue-500 flex items-center">
-			<ArrowLeftSolid class="w-5 h-5 mr-1" />
+			<ArrowLeftOutline class="w-5 h-5 mr-1" />
 			Back
 		</a>
 		<h1 class="text-xl font-semibold">Phone</h1>
