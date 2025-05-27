@@ -182,14 +182,7 @@
 	{/each}
 </div>
 
-<!-- Status message for pulsed apps -->
-{#if showStatusMessage && lastPulsedAppName}
-<div class="fixed bottom-24 left-0 right-0 flex justify-center z-50" transition:fade={{ duration: 300 }}>
-	<div class="bg-black/70 text-white px-6 py-3 rounded-full text-sm">
-		{lastPulsedAppName} is pulsing
-	</div>
-</div>
-{/if}
+<!-- Status message removed as requested -->
 
 <!-- iOS-style dock indicator -->
 <div class="flex justify-center mt-auto mb-8">
