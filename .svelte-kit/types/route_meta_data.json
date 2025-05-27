@@ -1,0 +1,10 @@
+{
+	"/": [],
+	"/api/pulse": [
+		"src/routes/api/pulse/+server.js"
+	],
+	"/api/socket": [
+		"src/routes/api/socket/+server.js"
+	],
+	"/phone": []
+}
