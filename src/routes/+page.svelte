@@ -23,21 +23,22 @@
 		path: string;
 		pulsing?: boolean;
 		notificationCount: number;
+		showNotifications?: boolean;
 	};
 
 	let apps: AppIcon[] = [
-		{ id: 'phone', name: 'Phone', icon: PhoneSolid, color: 'bg-green-500', path: '/phone', pulsing: false, notificationCount: 0 },
-		{ id: 'messages', name: 'Messages', icon: EnvelopeSolid, color: 'bg-green-400', path: '/messages', pulsing: false, notificationCount: 0 },
-		{ id: 'mail', name: 'Mail', icon: EnvelopeSolid, color: 'bg-blue-500', path: '/mail', pulsing: false, notificationCount: 0 },
-		{ id: 'camera', name: 'Camera', icon: CartSolid, color: 'bg-gray-700', path: '/camera', pulsing: false, notificationCount: 0 },
-		{ id: 'photos', name: 'Photos', icon: ImageSolid, color: 'bg-purple-500', path: '/photos', pulsing: false, notificationCount: 0 },
-		{ id: 'calendar', name: 'Calendar', icon: CalendarMonthSolid, color: 'bg-red-500', path: '/calendar', pulsing: false, notificationCount: 0 },
-		{ id: 'clock', name: 'Clock', icon: ClockSolid, color: 'bg-gray-800', path: '/clock', pulsing: false, notificationCount: 0 },
-		{ id: 'maps', name: 'Maps', icon: MapPinSolid, color: 'bg-green-600', path: '/maps', pulsing: false, notificationCount: 0 },
-		{ id: 'music', name: 'Music', icon: MusicSolid, color: 'bg-pink-500', path: '/music', pulsing: false, notificationCount: 0 },
-		{ id: 'settings', name: 'Settings', icon: CogSolid, color: 'bg-gray-500', path: '/settings', pulsing: false, notificationCount: 0 },
-		{ id: 'store', name: 'Store', icon: ShoppingBagSolid, color: 'bg-blue-600', path: '/store', pulsing: false, notificationCount: 0 },
-		{ id: 'findmy', name: 'Find My', icon: GlobeSolid, color: 'bg-blue-400', path: '/findmy', pulsing: false, notificationCount: 0 }
+		{ id: 'phone', name: 'Phone', icon: PhoneSolid, color: 'bg-green-500', path: '/phone', pulsing: false, notificationCount: 0, showNotifications: true },
+		{ id: 'messages', name: 'Messages', icon: EnvelopeSolid, color: 'bg-green-400', path: '/messages', pulsing: false, notificationCount: 0, showNotifications: true },
+		{ id: 'mail', name: 'Mail', icon: EnvelopeSolid, color: 'bg-blue-500', path: '/mail', pulsing: false, notificationCount: 0, showNotifications: true },
+		{ id: 'camera', name: 'Camera', icon: CartSolid, color: 'bg-gray-700', path: '/camera', pulsing: false, notificationCount: 0, showNotifications: true },
+		{ id: 'photos', name: 'Photos', icon: ImageSolid, color: 'bg-purple-500', path: '/photos', pulsing: false, notificationCount: 0, showNotifications: true },
+		{ id: 'calendar', name: 'Calendar', icon: CalendarMonthSolid, color: 'bg-red-500', path: '/calendar', pulsing: false, notificationCount: 0, showNotifications: true },
+		{ id: 'clock', name: 'Clock', icon: ClockSolid, color: 'bg-gray-800', path: '/clock', pulsing: false, notificationCount: 0, showNotifications: true },
+		{ id: 'maps', name: 'Maps', icon: MapPinSolid, color: 'bg-green-600', path: '/maps', pulsing: false, notificationCount: 0, showNotifications: true },
+		{ id: 'music', name: 'Music', icon: MusicSolid, color: 'bg-pink-500', path: '/music', pulsing: false, notificationCount: 0, showNotifications: true },
+		{ id: 'settings', name: 'Settings', icon: CogSolid, color: 'bg-gray-500', path: '/settings', pulsing: false, notificationCount: 0, showNotifications: false },
+		{ id: 'store', name: 'Store', icon: ShoppingBagSolid, color: 'bg-blue-600', path: '/store', pulsing: false, notificationCount: 0, showNotifications: true },
+		{ id: 'findmy', name: 'Find My', icon: GlobeSolid, color: 'bg-blue-400', path: '/findmy', pulsing: false, notificationCount: 0, showNotifications: true }
 	];
 
 	let lastPollTime = Date.now();
@@ -49,6 +50,40 @@
 	async function handleAppClick(appId: string, event: MouseEvent) {
 		// Prevent default navigation
 		event.preventDefault();
+		
+		// If settings app is clicked, clear all notifications
+		if (appId === 'settings') {
+			// Clear all notification counts locally
+			apps = apps.map(app => ({
+				...app,
+				notificationCount: 0
+			}));
+			
+			// Show status message that notifications were cleared
+			lastPulsedAppName = 'Settings';
+			showStatusMessage = true;
+			
+			// Hide status message after 3 seconds
+			setTimeout(() => {
+				showStatusMessage = false;
+			}, 3000);
+			
+			// Send clear notifications event to server for all clients
+			try {
+				const response = await fetch('/api/pulse/clear', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					}
+				});
+				
+				if (!response.ok) {
+					console.error('Failed to clear notifications for all clients');
+				}
+			} catch (error) {
+				console.error('Error clearing notifications for all clients:', error);
+			}
+		}
 		
 		// Trigger pulse animation locally
 		triggerPulse(appId);
@@ -113,10 +148,29 @@
 			const response = await fetch(`/api/pulse?lastPoll=${lastPollTime}`);
 			const data = await response.json();
 			
-			if (data.appId) {
-				// Update the last poll time
-				lastPollTime = data.timestamp;
+			// Update the last poll time
+			lastPollTime = data.timestamp || lastPollTime;
+			
+			// Check if we need to clear all notifications
+			if (data.clearNotifications) {
+				// Clear all notification counts
+				apps = apps.map(app => ({
+					...app,
+					notificationCount: 0
+				}));
 				
+				// Show status message that notifications were cleared
+				lastPulsedAppName = 'Settings';
+				showStatusMessage = true;
+				
+				// Hide status message after 3 seconds
+				setTimeout(() => {
+					showStatusMessage = false;
+				}, 3000);
+			}
+			
+			// Handle regular pulse events
+			if (data.appId) {
 				// Trigger pulse animation for the app
 				triggerPulse(data.appId);
 				
@@ -156,7 +210,7 @@
 		>
 			<div class="relative">
 				<!-- Notification badge positioned to overlap the app icon -->
-				{#if app.notificationCount > 0}
+				{#if app.notificationCount > 0 && app.showNotifications !== false}
 				<div class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-1 border-2 border-black shadow-md z-50">
 					{app.notificationCount > 99 ? '99+' : app.notificationCount}
 				</div>
